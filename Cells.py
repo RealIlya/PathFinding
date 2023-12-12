@@ -2,6 +2,7 @@ import math
 from tkinter import Canvas
 from typing import Literal, Callable
 
+import Constants
 from Constants import *
 
 
@@ -64,10 +65,9 @@ class Cells(Canvas):
 
         ax = x1 - x0  # vector x
         ay = y1 - y0  # vector y
-        bx = 1
-        by = 0
-        cos_alpha = (ax * bx + ay * by) / (((ax ** 2 + ay ** 2) ** 0.5) * ((bx ** 2 + by ** 2) ** 0.5))
-        sin_alpha = (1 - cos_alpha ** 2) ** 0.5
+        pi = math.atan2(ay, ax) - math.pi / 2
+        cos_alpha = math.cos(pi)
+        sin_alpha = math.sin(pi)
 
         x, y = (x1 + x0) / 2, (y1 + y0) / 2
         self.create_text(x + 20 * cos_alpha, y + 20 * sin_alpha, text=str(number), font=f"Roboto {font_size}",
@@ -98,7 +98,7 @@ class Cells(Canvas):
 
         tag = Cells.ARROW_TAG + str(index)
         self.create_line(x0, y0, x1, y1, fill=EDGE_COLOR, width=EDGE_WIDTH, arrow=direction,
-                         tags=[Cells.ARROW_TAG, tag])
+                         arrowshape=Constants.ARROW_SHAPE, tags=[Cells.ARROW_TAG, tag])
         self.tag_bind(tag, "<ButtonPress-3>", lambda event: self.__on_arrow_click(event, x0, y0, x1, y1))
 
     def __on_arrow_click(self, event, x0, y0, x1, y1):
@@ -113,30 +113,16 @@ class Cells(Canvas):
     def set_arrow_direction(self, direction: Literal["last", "both"]):
         self.bind("<ButtonPress-1>", lambda event: self._on_cell_cross_click(event, direction))
 
-    def _draw_grid(self):
-        width = self.winfo_width()
-        height = self.winfo_height()
-        for i in range(0, width, CELL_SIZE):
-            self.create_line(i, 0, i, height, fill=CELL_COLOR, tags=Cells.GRID_TAG, width=CELL_WIDTH)
-
-        for i in range(0, height, CELL_SIZE):
-            self.create_line(0, i, width, i, fill=CELL_COLOR, tags=Cells.GRID_TAG, width=CELL_WIDTH)
-
-    def redraw(self):
-        self._clear()
-        self._draw_grid()
-
     def draw_number_arrow_between_points_with_indexes(self, number, index1, index2):
         p1 = self.points[index1]
         p2 = self.points[index2]
         self.create_number_near_arrow(*p1, *p2, number, WEIGHT_SIZE)
 
-
     def draw_arrow_between_points_with_indexes(self, index1, index2):
         p1 = self.points[index1]
         p2 = self.points[index2]
-        self.create_line(*p1, *p2, fill=SELECTION_COLOR, width=SELECTION_WIDTH, arrow="last", tags=[Cells.ARROW_TAG,
-                                                                                                    Cells.SELECTION])
+        self.create_line(*p1, *p2, fill=SELECTION_COLOR, width=SELECTION_WIDTH, arrow="last",
+                         arrowshape=Constants.ARROW_SHAPE, tags=[Cells.ARROW_TAG, Cells.SELECTION])
 
     def _clear(self):
         self.delete("grid_line")

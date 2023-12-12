@@ -3,9 +3,9 @@ from tkinter import simpledialog, messagebox
 from typing import Literal
 
 from Cells import Cells
+from EdgesListbox import EdgesListBox
 from FrameMenu import FrameMenu
 from Graph import Graph
-from EdgesListbox import EdgesListBox
 from graph_elements.Edge import Edge
 from graph_elements.Vertex import Vertex
 
@@ -67,7 +67,7 @@ class App(tk.Tk):
 
     def find_shortest_path(self):
         self.cells.clear_selection()
-        
+
         if len(App.edges) > 0:
             if not self.check_edges_on_weights(App.edges):
                 return

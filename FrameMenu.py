@@ -10,9 +10,6 @@ class FrameMenu(Frame):
     def add_command(self, label, command):
         self.menu.add_command(label=label, command=command)
 
-    def add_check(self, label, command, offvalue, onvalue, variable):
-        self.menu.add_checkbutton(label=label, command=command, offvalue=offvalue, onvalue=onvalue, variable=variable)
-
     def add_cascade_commands(self, main_label, labels_commands: dict):
         sub_menu = Menu(tearoff=0)
 
