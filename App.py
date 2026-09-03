@@ -10,6 +10,25 @@ from graph_elements.Edge import Edge
 from graph_elements.Vertex import Vertex
 
 
+def parse_vertex_pair(value, vertex_count):
+    if value is None:
+        return None
+
+    parts = value.split()
+    if len(parts) != 2:
+        return None
+
+    try:
+        source, destination = (int(part) for part in parts)
+    except ValueError:
+        return None
+
+    if not 0 <= source < vertex_count or not 0 <= destination < vertex_count:
+        return None
+
+    return source, destination
+
+
 class App(tk.Tk):
     edges = []
 
@@ -73,17 +92,14 @@ class App(tk.Tk):
                 return
             result = simpledialog.askstring("Popup", "Input source and destination vertices",
                                             parent=self)
-            if result is None:
+            vertex_pair = parse_vertex_pair(result, len(self.cells.points))
+            if vertex_pair is None:
+                messagebox.showerror(
+                    "Invalid vertices",
+                    f"Enter two vertex indexes from 0 to {len(self.cells.points) - 1}",
+                )
                 return
-            result = result.split()
-            if len(result) < 2:
-                return
-            source, destination = result
-            if source.isdigit() and destination.isdigit():
-                source = int(source)
-                destination = int(destination)
-            else:
-                return
+            source, destination = vertex_pair
 
             graph = Graph(len(self.cells.points))
             for edge in App.edges:

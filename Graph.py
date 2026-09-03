@@ -8,34 +8,35 @@ class Graph:
         self.edges.append([a, b, weight])
 
     def find_shortest_path(self, source, destination):
+        if not 0 <= source < self.n or not 0 <= destination < self.n:
+            raise ValueError("Source and destination must be existing vertex indexes")
+
         distance = [float("inf")] * self.n
+        predecessor = [None] * self.n
         distance[source] = 0
 
-        checked_edges = []
-
         for _ in range(self.n - 1):
+            changed = False
             for a, b, weight in self.edges:
                 if distance[a] != float("inf") and distance[a] + weight < distance[b]:
-                    checked_edges.append([a, b, weight])
                     distance[b] = distance[a] + weight
+                    predecessor[b] = a
+                    changed = True
+
+            if not changed:
+                break
 
         for a, b, weight in self.edges:
             if distance[a] != float("inf") and distance[a] + weight < distance[b]:
                 return None, None
 
-        start_index = 0
-        buffer = 0
-        for i, e in enumerate(checked_edges[::-1]):
-            if e[1] == destination:
-                start_index = i
-                buffer = destination
-                break
+        if distance[destination] == float("inf"):
+            return [], distance[destination]
 
-        passed_vertices = [buffer]
+        path = []
+        current = destination
+        while current is not None:
+            path.append(current)
+            current = predecessor[current]
 
-        for i in range(len(checked_edges) - start_index - 1, -1, -1):
-            if checked_edges[i][1] == buffer:
-                buffer = checked_edges[i][0]
-                passed_vertices.append(buffer)
-
-        return passed_vertices[::-1], distance[destination]
+        return path[::-1], distance[destination]
